@@ -1,0 +1,644 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Mil-Spec · Brand Foundation &amp; Growth Partnership · 91Pixels</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<!--
+  ============================================================================
+  LIVE PITCH DECK · Mil-Spec × 91Pixels
+  ----------------------------------------------------------------------------
+  • Dark / light toggle (top-right sun/moon) · remembers choice.
+  • Navigate: click slide, arrow keys, space, on-screen arrows, dots, swipe.
+  • Fullscreen button (top-right) for presenting. Press F.
+  • Prints to PDF: every slide stacks (Cmd/Ctrl+P → Save as PDF).
+
+  ADD YOUR VIDEOS / IMAGES  ➜  edit the MEDIA config in the <script> at the
+  bottom. Drop files in a  /media  folder next to this file, e.g.:
+      1: { type:'video', src:'media/cover.mp4',  poster:'media/cover.jpg' },
+      7: { type:'image', src:'media/close.jpg' },
+  Any slide can take a background. A dark scrim + optional blur keeps the
+  text readable. If no file is set, a cinematic placeholder shows in its place.
+  ============================================================================
+-->
+
+<style>
+/* ============================ THEME TOKENS ============================ */
+:root, html[data-theme="light"]{
+  --canvas:#ffffff; --ink:#111111; --cloud:#f5f5f5;
+  --charcoal:#39393b; --ash:#4b4b4d; --mute:#6a6a6c; --stone:#9e9ea0;
+  --hairline:#cacacb; --hairline-soft:#e5e5e5;
+  --signal:#c8a24b; --signal-deep:#8a6f1f;   /* emphasis gold (dark enough for white bg) */
+  --deck-bg:#e6e7e9;
+  --hud-bg:rgba(255,255,255,.72); --hud-brd:rgba(17,17,17,.12); --hud-ink:#111;
+}
+html[data-theme="dark"]{
+  --canvas:#0c1017; --ink:#f2f4f8; --cloud:#161d28;               /* blue-tinted near-black, not pure #000 */
+  --charcoal:#c9cfd9; --ash:#aeb5c0; --mute:#8b929f; --stone:#69707d;
+  --hairline:rgba(255,255,255,.16); --hairline-soft:rgba(255,255,255,.09);
+  --signal:#d9b45f; --signal-deep:#eccd7c;   /* on dark, emphasis gold brightens */
+  --deck-bg:#05080e;
+  --hud-bg:rgba(18,24,33,.72); --hud-brd:rgba(255,255,255,.16); --hud-ink:#f2f4f8;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'Inter','Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--ink);
+  background:var(--deck-bg);-webkit-font-smoothing:antialiased;
+  transition:background .5s ease}
+
+/* ============================ DECK / STAGE =========================== */
+.deck{position:fixed;inset:0;display:grid;place-items:center;overflow:hidden;background:var(--deck-bg);transition:background .5s ease}
+.stage{position:relative;width:1280px;height:720px;transform-origin:center center;
+  box-shadow:0 30px 80px rgba(0,0,0,.35);border-radius:4px;overflow:hidden;background:var(--canvas)}
+
+.slide{position:absolute;inset:0;overflow:hidden;background:var(--canvas);
+  display:flex;flex-direction:column;padding:52px 72px 46px;
+  opacity:0;visibility:hidden;z-index:1;color:var(--ink)}
+.slide.is-active{opacity:1;visibility:visible;z-index:2}     /* visible instantly — never gated behind a transition */
+.slide .content{position:relative;z-index:3;display:flex;flex-direction:column;flex:1;min-height:0}
+/* motion is a transform-only lift, so content is always visible even if the animation is paused (hidden tab / print) */
+.slide.is-active .content{animation:contentIn .72s cubic-bezier(.16,1,.3,1)}
+@keyframes contentIn{from{transform:translateY(26px) scale(.994)} to{transform:none}}
+
+/* ============================ MEDIA LAYERS ========================== */
+.media{position:absolute;inset:0;z-index:0;overflow:hidden;
+  /* cinematic placeholder until a real video/image is dropped in */
+  background:
+    radial-gradient(120% 90% at 78% 12%, #26303f 0%, rgba(20,26,36,0) 55%),
+    linear-gradient(155deg,#10151d 0%,#0b0f16 55%,#05070b 100%);}
+.media .media-el{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.media::after{content:"";position:absolute;inset:0;
+  /* subtle film grain / vignette so placeholder reads cinematic */
+  background:radial-gradient(120% 120% at 50% 40%, rgba(0,0,0,0) 50%, rgba(0,0,0,.45) 100%)}
+.scrim{position:absolute;inset:0;z-index:1;
+  background:linear-gradient(90deg, rgba(6,8,12,.86) 0%, rgba(6,8,12,.62) 42%, rgba(6,8,12,.20) 100%)}
+.scrim.bottom{background:linear-gradient(0deg, rgba(6,8,12,.90) 0%, rgba(6,8,12,.45) 40%, rgba(6,8,12,0) 78%)}
+.scrim.even{background:linear-gradient(90deg, rgba(6,8,12,.90) 0%, rgba(6,8,12,.64) 52%, rgba(6,8,12,.54) 100%)}
+.scrim.blur{backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+
+/* media slides: force crisp white text + soft shadow for legibility, theme-independent */
+.slide.has-media{--ink:#ffffff;--charcoal:#e9ebef;--ash:#d3d6dc;--mute:#b9bdc6;
+  --hairline:rgba(255,255,255,.26);--hairline-soft:rgba(255,255,255,.14);
+  --cloud:rgba(255,255,255,.08);--signal-deep:#ecc978;--signal:#e0b85f}
+.slide.has-media .content{text-shadow:0 1px 26px rgba(0,0,0,.45)}
+
+/* ============================ TYPE ================================== */
+.display{font-family:'Bebas Neue','Arial Narrow',Impact,sans-serif;text-transform:uppercase;
+  line-height:.92;letter-spacing:.006em;font-weight:400;color:var(--ink);text-wrap:balance}
+.d-xxl{font-size:96px}.d-xl{font-size:84px}.d-lg{font-size:64px}.d-md{font-size:44px}.d-sm{font-size:32px}
+
+.top{display:flex;justify-content:space-between;align-items:baseline;
+  padding-bottom:14px;border-bottom:1px solid var(--hairline-soft)}
+.brand{display:flex;align-items:baseline;gap:10px}
+.brand .mk{font-family:'Bebas Neue','Arial Narrow',Impact,sans-serif;font-size:24px;letter-spacing:.05em;color:var(--ink);line-height:1}
+.brand .x{color:var(--stone);font-size:11px;letter-spacing:.22em;text-transform:uppercase}
+.run{font-size:12px;color:var(--stone);letter-spacing:.02em}
+.kicker{font-size:12px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--signal-deep)}
+
+.mid{flex:1;display:flex;flex-direction:column;justify-content:center;min-height:0;padding-top:6px}
+.mid.start{justify-content:flex-start;padding-top:20px}
+.foot{display:flex;justify-content:space-between;align-items:center;color:var(--stone);
+  font-size:11px;letter-spacing:.06em;text-transform:uppercase;padding-top:12px}
+.foot b{color:var(--ash);font-weight:600}
+
+.lead{color:var(--charcoal);font-size:19px;line-height:1.55;max-width:62ch;font-weight:400;text-wrap:pretty}
+.lead b{color:var(--ink);font-weight:600}
+
+.price{font-family:'Bebas Neue','Arial Narrow',Impact,sans-serif;color:var(--signal-deep);line-height:.9;letter-spacing:.01em}
+.price .cur{font-size:.5em;vertical-align:super;margin-right:2px}
+.price .per{font-family:'Inter',sans-serif;font-size:.20em;color:var(--mute);font-weight:500;letter-spacing:.02em}
+.headrow{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:2px}
+
+.cols{display:grid;border-top:1px solid var(--ink);margin-top:14px}
+.cols.c4{grid-template-columns:repeat(4,1fr)}.cols.c3{grid-template-columns:repeat(3,1fr)}
+.col{padding:22px 26px 8px;border-right:1px solid var(--hairline)}
+.col:first-child{padding-left:0}.col:last-child{border-right:0;padding-right:0}
+.col .lab{font-size:11px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--signal-deep);margin-bottom:7px}
+.col h3{font-family:'Bebas Neue','Arial Narrow',Impact,sans-serif;font-weight:400;letter-spacing:.02em;font-size:27px;
+  color:var(--ink);text-transform:uppercase;line-height:1.03;margin-bottom:12px;text-wrap:balance}
+.col ul{list-style:none;display:flex;flex-direction:column}
+.col li{font-size:13.5px;line-height:1.38;color:var(--charcoal);padding:9px 0;border-top:1px solid var(--hairline-soft)}
+.col li:first-child{border-top:0;padding-top:0}
+.col li .q{color:var(--mute)}
+
+.phases{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:1px solid var(--ink);margin-top:16px}
+.ph{padding:24px 24px 20px;border-right:1px solid var(--hairline);display:flex;flex-direction:column;gap:8px}
+.ph:first-child{padding-left:0}.ph:last-child{border-right:0;padding-right:0}
+.ph .pn{font-family:'Bebas Neue','Arial Narrow',Impact,sans-serif;font-size:38px;color:var(--signal);line-height:.8}
+.ph .pk{font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--mute)}
+.ph h4{font-family:'Bebas Neue','Arial Narrow',Impact,sans-serif;font-weight:400;letter-spacing:.03em;font-size:25px;text-transform:uppercase;color:var(--ink);line-height:1}
+.ph p{font-size:13px;line-height:1.44;color:var(--charcoal);text-wrap:pretty}
+
+.inv{display:flex;flex-direction:column;border-top:2px solid var(--ink)}
+.inv .row{display:flex;align-items:center;justify-content:space-between;padding:24px 4px;border-bottom:1px solid var(--hairline)}
+.inv .row .lab{display:flex;flex-direction:column;gap:4px}
+.inv .row .lab .t{font-family:'Bebas Neue','Arial Narrow',Impact,sans-serif;font-size:34px;letter-spacing:.02em;text-transform:uppercase;color:var(--ink);line-height:1}
+.inv .row .lab .s{font-size:13.5px;color:var(--mute)}
+.inv .row .val{text-align:right}
+
+.statement{margin-top:30px;max-width:72ch}
+.statement .mark{width:44px;height:3px;background:var(--signal);margin-bottom:16px}
+.statement p{font-size:23px;line-height:1.42;color:var(--ink);font-weight:500;text-wrap:balance}
+.statement p b{color:var(--signal-deep);font-weight:600}
+
+/* CTA: monochrome white/gray pill with a subtle dots-into-arrow "proceed" motion */
+.cta{position:relative;display:inline-flex;align-items:center;gap:12px;align-self:flex-start;
+  color:#1b1b1d;border-radius:9999px;padding:16px 30px;font-size:15px;font-weight:700;letter-spacing:.02em;
+  text-decoration:none;margin-top:40px;
+  background:
+    linear-gradient(100deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.92) 48%, rgba(255,255,255,0) 100%),
+    linear-gradient(180deg,#f3f3f4 0%,#dcdce0 100%);
+  background-size:200% 100%, 100% 100%;background-repeat:no-repeat;background-position:-30% 0, 0 0;
+  box-shadow:0 10px 32px rgba(0,0,0,.30);
+  animation:ctaSheen 3.6s ease-in-out infinite;
+  transition:transform .2s ease, box-shadow .3s ease}
+@keyframes ctaSheen{0%{background-position:-30% 0, 0 0}100%{background-position:140% 0, 0 0}}
+.cta:hover{transform:translateY(-2px);box-shadow:0 14px 42px rgba(0,0,0,.36)}
+.cta .go{display:inline-flex;align-items:center;gap:6px}
+.cta .go i{width:4px;height:4px;border-radius:50%;background:#9b9b9e;opacity:.22;
+  animation:dotGo 1.6s ease-in-out infinite}
+.cta .go i:nth-child(2){animation-delay:.16s}
+.cta .go i:nth-child(3){animation-delay:.32s}
+.cta .go .arw{margin-left:1px;color:#1b1b1d;font-weight:700;animation:arwGo 1.6s ease-in-out infinite}
+@keyframes dotGo{0%,100%{opacity:.14;transform:translateX(0)}45%{opacity:.9;transform:translateX(2px)}}
+@keyframes arwGo{0%,100%{transform:translateX(0)}50%{transform:translateX(3px)}}
+
+.divider{width:60px;height:4px;background:var(--ink);margin:16px 0 0}
+.wm{position:absolute;right:-8px;bottom:-40px;font-family:'Bebas Neue','Arial Narrow',Impact,sans-serif;
+  font-size:230px;color:rgba(120,120,130,.10);letter-spacing:.02em;line-height:.8;pointer-events:none;z-index:2}
+html[data-theme="dark"] .wm{color:rgba(255,255,255,.05)}
+.slide.has-media .wm{color:rgba(255,255,255,.08)}
+
+/* ============================ HUD / CONTROLS ======================== */
+.progress{position:fixed;top:0;left:0;height:3px;background:var(--signal);width:0;z-index:60;transition:width .5s cubic-bezier(.16,1,.3,1)}
+.topbar{position:fixed;top:16px;right:18px;display:flex;gap:8px;z-index:60}
+.hud{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:14px;z-index:60;
+  padding:8px 12px;border-radius:9999px;background:var(--hud-bg);border:1px solid var(--hud-brd);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.ctrl{width:40px;height:40px;border-radius:9999px;display:grid;place-items:center;cursor:pointer;
+  background:var(--hud-bg);border:1px solid var(--hud-brd);color:var(--hud-ink);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);transition:transform .18s ease,background .3s ease}
+.ctrl:hover{transform:translateY(-2px)}
+.ctrl svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.hud .ctrl{width:34px;height:34px;background:transparent;border:0}
+.dots{display:flex;gap:8px;align-items:center}
+.dot{width:8px;height:8px;border-radius:9999px;background:var(--hud-ink);opacity:.28;cursor:pointer;transition:opacity .25s ease,transform .25s ease}
+.dot.on{opacity:1;transform:scale(1.35);background:var(--signal-deep)}
+.count{font-family:'Bebas Neue','Arial Narrow',Impact,sans-serif;font-size:16px;letter-spacing:.08em;color:var(--hud-ink);min-width:64px;text-align:center}
+.count .c{color:var(--signal-deep)}
+.hint{position:fixed;bottom:74px;left:50%;transform:translateX(-50%);z-index:59;font-size:12px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--hud-ink);opacity:.6;padding:6px 14px;border-radius:9999px;background:var(--hud-bg);
+  border:1px solid var(--hud-brd);backdrop-filter:blur(14px);transition:opacity .6s ease}
+.hint.gone{opacity:0;pointer-events:none}
+
+/* sun/moon: show the icon for the mode you'll switch TO */
+html[data-theme="light"] .i-moon{display:block}html[data-theme="light"] .i-sun{display:none}
+html[data-theme="dark"] .i-sun{display:block}html[data-theme="dark"] .i-moon{display:none}
+
+@media (prefers-reduced-motion: reduce){
+  .slide.is-active .content{animation:none!important}
+  .cta,.cta .go i,.cta .go .arw{animation:none!important}
+  .progress{transition:none}
+}
+
+/* ============================ PRINT / PDF =========================== */
+@media print{
+  html,body{background:#fff;height:auto}
+  .deck{position:static;display:block;background:#fff;overflow:visible}
+  .stage{transform:none!important;width:1280px;height:auto;box-shadow:none;border-radius:0}
+  .slide{position:relative;inset:auto;opacity:1!important;visibility:visible!important;transform:none!important;
+    width:1280px;height:720px;break-after:page;color:var(--ink)}
+  .slide .content{transform:none!important}
+  .topbar,.hud,.progress,.hint{display:none!important}
+  @page{size:1280px 720px;margin:0}
+}
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+
+<div class="topbar">
+  <button class="ctrl" id="themeBtn" title="Toggle dark / light (D)" aria-label="Toggle theme">
+    <svg class="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+    <svg class="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+  </button>
+  <button class="ctrl" id="fsBtn" title="Fullscreen (F)" aria-label="Fullscreen">
+    <svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+  </button>
+</div>
+
+<div class="deck" id="deck">
+  <div class="stage" id="stage">
+
+    <!-- 1 · COVER  (media-enabled) -->
+    <section class="slide has-media" data-media="1">
+      <div class="media" data-slot="1"></div>
+      <div class="scrim"></div>
+      <div class="content">
+        <div class="top">
+          <div class="brand"><span class="mk">MIL-SPEC</span><span class="x">× 91Pixels</span></div>
+          <div class="run">Partnership Proposal · 2026</div>
+        </div>
+        <div class="mid">
+          <div class="kicker" style="margin-bottom:22px">A 12-Month Program</div>
+          <h1 class="display d-xxl">Brand Foundation<br><span style="color:var(--signal-deep)">&amp; Growth.</span></h1>
+          <p class="lead" style="margin-top:26px;font-size:20px">We build the Mil-Spec brand as a lasting asset, then run the engine
+            that keeps it working, month after month. <b>One foundation. One partnership. One standard.</b></p>
+        </div>
+        <div class="foot"><span>Prepared for <b>David Stockman</b> · Mil-Spec Safety &amp; Security</span><span>91Pixels · hello@91pixels.com</span></div>
+      </div>
+      <div class="wm">01</div>
+    </section>
+
+    <!-- 2 · THE SHAPE -->
+    <section class="slide">
+      <div class="content">
+        <div class="top">
+          <div class="brand"><span class="mk">MIL-SPEC</span><span class="x">× 91Pixels</span></div>
+          <div class="run">How the partnership works</div>
+        </div>
+        <div class="mid start">
+          <h2 class="display d-lg" style="max-width:20ch">Build the asset once.<br>Keep it compounding.</h2>
+          <p class="lead" style="margin-top:20px;max-width:88ch">Your investment comes in two parts that work together: a one-time
+            <b>Foundation</b> that creates the brand, and a monthly <b>Engine</b> that turns it into leads, reputation and reach.</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;border-top:1px solid var(--ink);margin-top:26px">
+            <div style="padding:26px 30px 26px 0;border-right:1px solid var(--hairline)">
+              <div style="font-size:11px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--mute);margin-bottom:8px">Part One · One-Time</div>
+              <h3 class="display d-sm">The Foundation</h3>
+              <p class="lead" style="font-size:14.5px;margin-top:8px;max-width:40ch">Your complete brand &amp; asset system, designed once
+                and rolled out across the year. The capital work everything else stands on.</p>
+              <div style="margin-top:16px"><span class="price" style="font-size:48px"><span class="cur">$</span>8,400</span></div>
+            </div>
+            <div style="padding:26px 0 26px 30px">
+              <div style="font-size:11px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--signal-deep);margin-bottom:8px">Part Two · Monthly</div>
+              <h3 class="display d-sm">The Growth Engine</h3>
+              <p class="lead" style="font-size:14.5px;margin-top:8px;max-width:40ch">The always-on program that gets Mil-Spec found, trusted
+                and booked, with reporting every month.</p>
+              <div style="margin-top:16px"><span class="price" style="font-size:48px"><span class="cur">$</span>3,250<span class="per"> / month</span></span></div>
+            </div>
+          </div>
+        </div>
+        <div class="foot"><span><b>12-month partnership</b> · ~6-8 months of hands-on collaboration</span><span></span></div>
+      </div>
+      <div class="wm">02</div>
+    </section>
+
+    <!-- 3 · THE FOUNDATION -->
+    <section class="slide">
+      <div class="content">
+        <div class="top">
+          <div class="brand"><span class="mk">MIL-SPEC</span><span class="x">× 91Pixels</span></div>
+          <div class="run">The Foundation · One-time</div>
+        </div>
+        <div class="mid start">
+          <div class="headrow">
+            <h2 class="display d-lg">Everything in your<br>brand foundation</h2>
+            <span class="price" style="font-size:48px"><span class="cur">$</span>8,400</span>
+          </div>
+          <div class="cols c4">
+            <div class="col">
+              <h3>Strategy &amp;<br>Identity Core</h3>
+              <ul>
+                <li>Brand strategy &amp; positioning <span class="q">(private workshop)</span></li>
+                <li>Logo refinement or redesign</li>
+                <li>Tagline / slogan</li>
+                <li>Color system</li>
+                <li>Typography system</li>
+                <li>Iconography</li>
+              </ul>
+            </div>
+            <div class="col">
+              <h3>Apparel &amp;<br>Merch</h3>
+              <ul>
+                <li>T-shirts, caps, hoodies</li>
+                <li>Embroidered uniform design</li>
+                <li>Officer &amp; ID badges</li>
+                <li>Internal recognition badges</li>
+                <li>Notepads &amp; stationery</li>
+              </ul>
+            </div>
+            <div class="col">
+              <h3>Environment &amp; Vehicle</h3>
+              <ul>
+                <li>Patrol-vehicle livery / wrap</li>
+                <li>Billboard design</li>
+                <li>Print collateral</li>
+                <li>LED light-panel design</li>
+                <li>Signage</li>
+              </ul>
+            </div>
+            <div class="col">
+              <h3>Motion, Sound &amp; Broadcast</h3>
+              <ul>
+                <li>Photography &amp; video direction</li>
+                <li>Motion &amp; interaction design</li>
+                <li>Sound design &amp; jingle</li>
+                <li>Radio campaign creative</li>
+                <li>Ad campaign creative</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="foot"><span>Delivered progressively across the 12-month partnership · sequenced to impact</span><span>03</span></div>
+      </div>
+      <div class="wm">03</div>
+    </section>
+
+    <!-- 4 · THE GROWTH ENGINE -->
+    <section class="slide">
+      <div class="content">
+        <div class="top">
+          <div class="brand"><span class="mk">MIL-SPEC</span><span class="x">× 91Pixels</span></div>
+          <div class="run">The Growth Engine · Monthly</div>
+        </div>
+        <div class="mid start">
+          <div class="headrow">
+            <h2 class="display d-lg">The monthly<br>growth engine</h2>
+            <span class="price" style="font-size:48px"><span class="cur">$</span>3,250<span class="per"> / month</span></span>
+          </div>
+          <div class="cols c4">
+            <div class="col">
+              <div class="lab">Get Found</div><h3>Visibility</h3>
+              <ul>
+                <li>Google Business Profile setup &amp; cleanup</li>
+                <li>SEO content &amp; blogs</li>
+                <li>Campaign tracking &amp; attribution</li>
+              </ul>
+            </div>
+            <div class="col">
+              <div class="lab">Get Trusted</div><h3>Reputation</h3>
+              <ul>
+                <li>Rating &amp; review system</li>
+                <li>Video testimonials</li>
+                <li>Certification showcase</li>
+                <li>AI chat support</li>
+              </ul>
+            </div>
+            <div class="col">
+              <div class="lab">Get Leads</div><h3>Conversion</h3>
+              <ul>
+                <li>Lead-gen landing page</li>
+                <li>Social media marketing</li>
+                <li>Analytics &amp; A/B testing</li>
+              </ul>
+            </div>
+            <div class="col">
+              <div class="lab">Stay Known</div><h3>Authority</h3>
+              <ul>
+                <li>Founder origin &amp; ROI films</li>
+                <li>On-location interviews</li>
+                <li>YouTube: classes &amp; drills</li>
+              </ul>
+            </div>
+          </div>
+          <p class="lead" style="font-size:14px;margin-top:20px;color:var(--mute)">Every cycle closes with a <b style="color:var(--ink)">monthly performance report</b>, so you always see what the engine returned.</p>
+        </div>
+        <div class="foot"><span>Always-on · measured · iterated month over month</span><span>04</span></div>
+      </div>
+      <div class="wm">04</div>
+    </section>
+
+    <!-- 5 · DIVIDER  (media-enabled) -->
+    <section class="slide has-media" data-media="5">
+      <div class="media" data-slot="5"></div>
+      <div class="scrim bottom"></div>
+      <div class="content">
+        <div class="top">
+          <div class="brand"><span class="mk">MIL-SPEC</span><span class="x">× 91Pixels</span></div>
+          <div class="run">The Mil-Spec Partnership</div>
+        </div>
+        <div class="mid" style="justify-content:center">
+          <div class="kicker" style="margin-bottom:20px">One brand, everywhere</div>
+          <h2 class="display d-xxl" style="max-width:15ch">One standard.<br>Every touchpoint.</h2>
+          <p class="lead" style="margin-top:24px;font-size:20px;max-width:58ch">From the badge on the uniform to the wrap on the
+            patrol car, one brand shows up everywhere Mil-Spec does.</p>
+        </div>
+        <div class="foot"><span>How the year comes to life</span><span></span></div>
+      </div>
+      <div class="wm">05</div>
+    </section>
+
+    <!-- 6 · THE 12-MONTH RHYTHM -->
+    <section class="slide">
+      <div class="content">
+        <div class="top">
+          <div class="brand"><span class="mk">MIL-SPEC</span><span class="x">× 91Pixels</span></div>
+          <div class="run">The 12-month rhythm</div>
+        </div>
+        <div class="mid start">
+          <h2 class="display d-lg">How the year moves</h2>
+          <div class="phases">
+            <div class="ph"><div class="pn">01</div><div class="pk">Months 1-2</div><h4>Foundation</h4><p>Brand workshop, strategy and the identity core. The base everything builds on.</p></div>
+            <div class="ph"><div class="pn">02</div><div class="pk">Months 3-4</div><h4>Activate</h4><p>Apply the system across touchpoints and switch on the lead engine.</p></div>
+            <div class="ph"><div class="pn">03</div><div class="pk">Months 5-8</div><h4>Grow</h4><p>Content, campaigns and reputation build. The compounding stretch.</p></div>
+            <div class="ph"><div class="pn">04</div><div class="pk">Months 9-12</div><h4>Scale</h4><p>Optimise what works, expand the asset library, build lasting authority.</p></div>
+          </div>
+          <div class="statement">
+            <div class="mark"></div>
+            <p><b>Six to eight months of hands-on collaboration.</b> That is exactly why this is built as a
+              <b>12-month partnership</b>, not a one-off project.</p>
+          </div>
+        </div>
+        <div class="foot"><span>A rhythm, not a checklist. We adjust as the numbers come in</span><span>06</span></div>
+      </div>
+      <div class="wm">06</div>
+    </section>
+
+    <!-- 6 · THE INVESTMENT -->
+    <section class="slide">
+      <div class="content">
+        <div class="top">
+          <div class="brand"><span class="mk">MIL-SPEC</span><span class="x">× 91Pixels</span></div>
+          <div class="run">The investment</div>
+        </div>
+        <div class="mid start">
+          <h2 class="display d-xl">The investment</h2>
+          <div class="inv" style="margin-top:22px">
+            <div class="row">
+              <div class="lab"><span class="t">Brand Foundation</span><span class="s">One-time · your complete brand &amp; asset system</span></div>
+              <div class="val"><span class="price" style="font-size:58px"><span class="cur">$</span>8,400</span></div>
+            </div>
+            <div class="row">
+              <div class="lab"><span class="t">Growth Engine</span><span class="s">Monthly · the always-on demand + reputation program</span></div>
+              <div class="val"><span class="price" style="font-size:58px"><span class="cur">$</span>3,250<span class="per"> / month</span></span></div>
+            </div>
+            <div class="row" style="border-bottom:0">
+              <div class="lab"><span class="t">Term</span><span class="s">The window we need to move the numbers meaningfully</span></div>
+              <div class="val"><span class="display d-md">12-Month Partnership</span></div>
+            </div>
+          </div>
+          <div class="statement" style="margin-top:24px">
+            <div class="mark"></div>
+            <p>The brand is <b>one-time capital work</b>. We build the asset once, then the engine keeps it
+              <b>alive and compounding</b> every month.</p>
+          </div>
+        </div>
+        <div class="foot"><span>Simple, senior, and built to last the year</span><span>07</span></div>
+      </div>
+      <div class="wm">07</div>
+    </section>
+
+    <!-- 8 · CLOSE  (media-enabled) -->
+    <section class="slide has-media" data-media="8">
+      <div class="media" data-slot="8"></div>
+      <div class="scrim even"></div>
+      <div class="content">
+        <div class="top">
+          <div class="brand"><span class="mk">MIL-SPEC</span><span class="x">× 91Pixels</span></div>
+          <div class="run">What you can expect</div>
+        </div>
+        <div class="mid start">
+          <h2 class="display d-lg" style="max-width:22ch">A senior team, on the<br>record every month</h2>
+          <div class="cols c3">
+            <div class="col"><h3>Dedicated<br>team</h3><p class="lead" style="font-size:14.5px">A lead, a builder and a researcher on Mil-Spec. Not a queue.</p></div>
+            <div class="col"><h3>Monthly<br>reporting</h3><p class="lead" style="font-size:14.5px">Clear numbers each cycle. You always know what you got.</p></div>
+            <div class="col"><h3>On-brand,<br>always</h3><p class="lead" style="font-size:14.5px">Every asset ships to one standard: the Mil-Spec standard.</p></div>
+          </div>
+          <p class="lead" style="margin-top:26px"><b>Next step:</b> a green light from you, then we book your private brand
+            workshop and the year begins.</p>
+          <a class="cta no-advance" href="mailto:hello@91pixels.com?subject=Mil-Spec%20x%2091Pixels%3A%20Approving%20the%20partnership&body=Hey%20Bala%2C%0D%0A%0D%0AThe%20contract%20looks%20great.%20Let%27s%20go%20ahead%20and%20create%20the%20contract.%0D%0A%0D%0AThanks,%20David">Approve &amp; book the workshop <span class="go" aria-hidden="true"><i></i><i></i><i></i><span class="arw">→</span></span></a>
+        </div>
+        <div class="foot"><span><b>91Pixels</b> · hello@91pixels.com</span><span>Mil-Spec × 91Pixels · 2026 · 08</span></div>
+      </div>
+      <div class="wm">08</div>
+    </section>
+
+  </div><!-- /stage -->
+</div><!-- /deck -->
+
+<div class="hint" id="hint">← → · click to advance</div>
+
+<div class="hud">
+  <button class="ctrl" id="prevBtn" aria-label="Previous"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
+  <div class="dots" id="dots"></div>
+  <div class="count"><span class="c" id="cur">01</span> / <span id="tot">07</span></div>
+  <button class="ctrl" id="nextBtn" aria-label="Next"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button>
+</div>
+
+<script>
+/* ============================================================================
+   MEDIA CONFIG — point these at your files (drop them in a /media folder).
+   type: 'video' | 'image'. poster is the still shown before a video loads
+   and in the printed PDF. Leave a slide out to keep the cinematic placeholder.
+   ========================================================================== */
+const MEDIA = {
+  1: { type:'video', src:'media/cover.mp4',    poster:'media/cover.jpg' },
+  5: { type:'video', src:'media/divider.mp4',  poster:'media/divider.jpg' },
+  8: { type:'video', src:'media/close.mp4',    poster:'media/close.jpg' },
+};
+
+(function(){
+  const root = document.documentElement;
+  root.classList.add('js');
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const stage  = document.getElementById('stage');
+  const deck   = document.getElementById('deck');
+  let idx = 0;
+
+  /* ---- inject any configured media ---- */
+  Object.keys(MEDIA).forEach(function(k){
+    const cfg = MEDIA[k];
+    const slot = document.querySelector('.media[data-slot="'+k+'"]');
+    if(!slot || !cfg || !cfg.src) return;
+    let el;
+    if(cfg.type === 'video'){
+      el = document.createElement('video');
+      el.className='media-el'; el.muted=true; el.loop=true; el.autoplay=true;
+      el.setAttribute('playsinline',''); el.setAttribute('preload','auto');
+      if(cfg.poster) el.poster=cfg.poster;
+      const s=document.createElement('source'); s.src=cfg.src; s.type='video/mp4'; el.appendChild(s);
+    } else {
+      el = document.createElement('img'); el.className='media-el'; el.src=cfg.src; el.alt='';
+    }
+    slot.appendChild(el);
+  });
+
+  /* ---- dots ---- */
+  const dots = document.getElementById('dots');
+  slides.forEach(function(_,k){
+    const d=document.createElement('button'); d.className='dot'; d.setAttribute('aria-label','Slide '+(k+1));
+    d.addEventListener('click',function(e){e.stopPropagation();go(k);}); dots.appendChild(d);
+  });
+  document.getElementById('tot').textContent = String(slides.length).padStart(2,'0');
+
+  /* ---- theme ---- */
+  function setTheme(t){ root.setAttribute('data-theme',t); try{localStorage.setItem('ms-theme',t);}catch(e){} }
+  (function initTheme(){
+    let t; try{t=localStorage.getItem('ms-theme');}catch(e){}
+    if(!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    setTheme(t);
+  })();
+  document.getElementById('themeBtn').addEventListener('click',function(e){
+    e.stopPropagation(); setTheme(root.getAttribute('data-theme')==='dark'?'light':'dark');
+  });
+
+  /* ---- navigation ---- */
+  function playMedia(){
+    slides.forEach(function(s,k){
+      const v=s.querySelector('video.media-el'); if(!v) return;
+      if(k===idx){ const p=v.play(); if(p&&p.catch)p.catch(function(){}); } else { v.pause(); }
+    });
+  }
+  function render(){
+    slides.forEach(function(s,k){ s.classList.toggle('is-active', k===idx); });
+    Array.from(dots.children).forEach(function(d,k){ d.classList.toggle('on', k===idx); });
+    document.getElementById('cur').textContent = String(idx+1).padStart(2,'0');
+    document.getElementById('progress').style.width = ((idx)/(slides.length-1)*100)+'%';
+    playMedia();
+  }
+  function go(n){ idx = Math.max(0, Math.min(slides.length-1, n)); render(); }
+  function next(){ if(idx<slides.length-1) go(idx+1); }
+  function prev(){ if(idx>0) go(idx-1); }
+
+  document.getElementById('nextBtn').addEventListener('click',function(e){e.stopPropagation();next();});
+  document.getElementById('prevBtn').addEventListener('click',function(e){e.stopPropagation();prev();});
+
+  /* keyboard */
+  window.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' '){e.preventDefault();next();}
+    else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();prev();}
+    else if(e.key==='Home'){go(0);} else if(e.key==='End'){go(slides.length-1);}
+    else if(e.key==='d'||e.key==='D'){setTheme(root.getAttribute('data-theme')==='dark'?'light':'dark');}
+    else if(e.key==='f'||e.key==='F'){toggleFs();}
+  });
+
+  /* click to advance (ignore links, buttons, controls) */
+  deck.addEventListener('click',function(e){
+    if(e.target.closest('a, button, .no-advance, .hud, .topbar, .dot')) return;
+    next();
+  });
+
+  /* touch swipe */
+  let tx=0;
+  deck.addEventListener('touchstart',function(e){ tx=e.changedTouches[0].clientX; },{passive:true});
+  deck.addEventListener('touchend',function(e){
+    const dx=e.changedTouches[0].clientX-tx; if(Math.abs(dx)>50){ dx<0?next():prev(); }
+  },{passive:true});
+
+  /* fullscreen */
+  function toggleFs(){ if(!document.fullscreenElement){ (deck.requestFullscreen||function(){})().catch&&deck.requestFullscreen().catch(function(){}); } else { document.exitFullscreen(); } }
+  document.getElementById('fsBtn').addEventListener('click',function(e){e.stopPropagation();toggleFs();});
+
+  /* fit stage to viewport (keeps the 1280×720 design crisp at any size) */
+  function fit(){
+    const pad = 0.965;
+    const s = Math.min(window.innerWidth/1280, window.innerHeight/720) * pad;
+    stage.style.transform = 'scale('+s+')';
+  }
+  window.addEventListener('resize', fit);
+
+  /* first-run hint fades away */
+  const hint=document.getElementById('hint');
+  setTimeout(function(){ hint.classList.add('gone'); }, 4200);
+
+  fit(); render();
+})();
+</script>
+</body>
+</html>
